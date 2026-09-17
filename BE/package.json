@@ -1,10 +1,15 @@
 {
   "name": "be",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "REST API quan ly cua hang laptop",
+  "main": "src/server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "nodemon src/server.js",
+    "start": "node src/server.js",
+    "test": "node --test",
+    "check": "node scripts/kiem-tra-cu-phap.js",
+    "test:integration": "node scripts/kiem-tra-tich-hop.js",
+    "seed:test": "node scripts/tao-tai-khoan-thu-nghiem.js"
   },
   "keywords": [],
   "author": "",
