@@ -1,0 +1,4 @@
+import { Laptop } from 'lucide-react'
+import { formatCurrency } from '../../utils/formatters'
+const items = [{ name: 'MacBook Air M3 13 inch', sold: 84, revenue: 2184000000 }, { name: 'ASUS ROG Zephyrus G14', sold: 61, revenue: 1746000000 }, { name: 'Dell XPS 13 Plus', sold: 48, revenue: 1432000000 }, { name: 'HP Victus 16', sold: 39, revenue: 986000000 }]
+export function BestSellers() { return <section className="panel"><div className="panel-header"><div><h2 className="panel-title">Sản phẩm bán chạy</h2><p className="panel-subtitle">Xếp hạng theo số lượng tháng này</p></div></div><div className="best-list">{items.map((item, index) => <div className="best-item" key={item.name}><span className="rank">0{index + 1}</span><span className="product-thumb"><Laptop size={19} /></span><div><strong>{item.name}</strong><span>{item.sold} sản phẩm</span></div><b>{formatCurrency(item.revenue).replace('₫', '')}</b></div>)}</div></section> }

@@ -1,0 +1,4 @@
+import { AlertTriangle, Laptop } from 'lucide-react'
+import { Link } from 'react-router-dom'
+import type { LowStockProduct } from '../../types/dashboard'
+export function LowStockList({ products }: { products: LowStockProduct[] }) { return <section className="panel"><div className="panel-header"><div><h2 className="panel-title">Cảnh báo tồn kho</h2><p className="panel-subtitle">Sản phẩm dưới mức tồn tối thiểu</p></div><span className="alert-count"><AlertTriangle size={14} />{products.length}</span></div><div className="stock-list">{products.map((product) => <div className="stock-item" key={product.id}><div className="product-thumb"><Laptop size={20} /></div><div className="stock-copy"><div className="stock-name">{product.name}</div><div className="stock-sku">{product.sku}</div></div><div className="stock-count"><strong>{product.stock}</strong><span>còn lại</span></div></div>)}</div><Link className="panel-link" to="/kho-hang">Kiểm tra tồn kho</Link></section> }

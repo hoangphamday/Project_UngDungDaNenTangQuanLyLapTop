@@ -1,0 +1,6 @@
+import { ArrowUpRight } from 'lucide-react'
+import { Link } from 'react-router-dom'
+import type { RecentOrder } from '../../types/dashboard'
+import { formatCurrency, getInitials } from '../../utils/formatters'
+import { StatusBadge } from '../common/StatusBadge'
+export function RecentOrders({ orders }: { orders: RecentOrder[] }) { return <section className="panel recent-orders"><div className="panel-header"><div><h2 className="panel-title">Đơn hàng gần đây</h2><p className="panel-subtitle">Các giao dịch mới nhất hôm nay</p></div><Link className="panel-action" to="/don-hang">Xem tất cả <ArrowUpRight size={14} /></Link></div><div className="data-table-wrap"><table className="data-table dashboard-table"><thead><tr><th>Mã đơn</th><th>Khách hàng</th><th>Ngày đặt</th><th>Giá trị</th><th>Trạng thái</th></tr></thead><tbody>{orders.map((order) => <tr key={order.id}><td><span className="link-value">{order.id}</span></td><td><div className="entity-cell"><span className="table-avatar">{getInitials(order.customer)}</span><div><strong>{order.customer}</strong><span>{order.email}</span></div></div></td><td>{order.date}</td><td><strong className="money">{formatCurrency(order.amount)}</strong></td><td><StatusBadge value={order.status} /></td></tr>)}</tbody></table></div></section> }

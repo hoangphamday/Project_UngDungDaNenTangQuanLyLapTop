@@ -1,38 +1,36 @@
 # Phân tích cơ sở dữ liệu và kế hoạch API
 
-Tài liệu này đối chiếu trực tiếp với `../LapTop_Store.sql` (MySQL 8.0+, 27 bảng). Không có bảng hay cột giả định nào được thêm vào mã nguồn Phase 1.
+Tài liệu này đối chiếu trực tiếp với `../LapTop_Store.sql` (MySQL 8.0+, 25 bảng). Không có bảng hay cột giả định nào được thêm vào mã nguồn Phase 1.
 
-## 1. Mapping 27 bảng sang module
+## 1. Mapping 25 bảng sang module
 
 | # | Bảng | Module chính | Quan hệ/nghiệp vụ |
 |---:|---|---|---|
-| 1 | `vai_tro` | xác thực, phân quyền | Role `ADMIN`, `STAFF`, `CUSTOMER` |
-| 2 | `tai_khoan` | xác thực, tài khoản | Chủ tài khoản; trạng thái đăng nhập |
-| 3 | `refresh_token` | xác thực | Hash token, nhiều thiết bị, thu hồi |
-| 4 | `thiet_bi` | thiết bị, Expo push | Token push theo tài khoản |
-| 5 | `otp_xac_thuc` | xác thực | OTP theo số điện thoại và mục đích |
-| 6 | `khach_hang` | hồ sơ, checkout | Hồ sơ customer, điểm tích lũy |
-| 7 | `nhan_vien` | nhân viên, đơn/nhập hàng | Hồ sơ staff và người xử lý |
-| 8 | `hang_laptop` | hãng | Hãng của laptop, scope voucher |
-| 9 | `danh_muc` | danh mục | Cây cha-con, scope voucher |
-| 10 | `laptop` | sản phẩm | Giá, trạng thái, filter, thông số |
-| 11 | `hinh_anh_laptop` | ảnh sản phẩm | Nhiều ảnh, ảnh chính, thứ tự |
-| 12 | `kho` | kho | Điểm lưu kho |
-| 13 | `ton_kho` | tồn kho | `available = so_luong - so_luong_da_dat` |
-| 14 | `nha_cung_cap` | nhà cung cấp | Đầu vào phiếu nhập |
-| 15 | `phieu_nhap` | nhập hàng | Luồng DRAFT/COMPLETED/CANCELLED |
-| 16 | `chi_tiet_phieu_nhap` | nhập hàng | Dòng hàng và thành tiền generated |
-| 17 | `dia_chi` | địa chỉ | Địa chỉ thuộc khách hàng |
-| 18 | `chi_tiet_gio_hang` | giỏ hàng | Giỏ trực tiếp, không có bảng cha |
-| 19 | `khuyen_mai` | khuyến mãi | Rule ALL/PRODUCT/CATEGORY/BRAND |
-| 20 | `chi_tiet_khuyen_mai` | khuyến mãi | Laptop thuộc scope PRODUCT |
-| 21 | `don_hang` | đơn hàng | Tổng tiền, trạng thái, nhân viên |
-| 22 | `chi_tiet_don_hang` | đơn hàng | Snapshot tên, đơn giá, số lượng |
-| 23 | `thanh_toan` | thanh toán | Nhiều lần thử trên một đơn |
-| 24 | `danh_gia` | đánh giá | Gắn customer/laptop/order |
-| 25 | `san_pham_yeu_thich` | yêu thích | Unique customer-laptop |
-| 26 | `banner_quang_cao` | banner | Loại, lịch hiệu lực, thứ tự |
-| 27 | `thong_bao` | thông báo | In-app notification theo tài khoản |
+| 1 | `tai_khoan` | xác thực, tài khoản | Chủ tài khoản; vai trò `ADMIN`/`STAFF`/`CUSTOMER`; trạng thái đăng nhập |
+| 2 | `refresh_token` | xác thực | Hash token, nhiều thiết bị, thu hồi |
+| 3 | `thiet_bi` | thiết bị, Expo push | Token push theo tài khoản |
+| 4 | `otp_xac_thuc` | xác thực | OTP theo số điện thoại và mục đích |
+| 5 | `khach_hang` | hồ sơ, checkout | Hồ sơ customer, điểm tích lũy |
+| 6 | `nhan_vien` | nhân viên, đơn/nhập hàng | Hồ sơ staff và người xử lý |
+| 7 | `hang_laptop` | hãng | Hãng của laptop, scope voucher |
+| 8 | `danh_muc` | danh mục | Cây cha-con, scope voucher |
+| 9 | `laptop` | sản phẩm | Giá, trạng thái, filter, thông số |
+| 10 | `hinh_anh_laptop` | ảnh sản phẩm | Nhiều ảnh, ảnh chính, thứ tự |
+| 11 | `kho` | kho | Điểm lưu kho |
+| 12 | `ton_kho` | tồn kho | `available = so_luong - so_luong_da_dat` |
+| 13 | `nha_cung_cap` | nhà cung cấp | Đầu vào phiếu nhập |
+| 14 | `phieu_nhap` | nhập hàng | Luồng DRAFT/COMPLETED/CANCELLED |
+| 15 | `chi_tiet_phieu_nhap` | nhập hàng | Dòng hàng và thành tiền generated |
+| 16 | `dia_chi` | địa chỉ | Địa chỉ thuộc khách hàng |
+| 17 | `chi_tiet_gio_hang` | giỏ hàng | Giỏ trực tiếp, không có bảng cha |
+| 18 | `khuyen_mai` | khuyến mãi | Rule ALL/PRODUCT/CATEGORY/BRAND |
+| 19 | `chi_tiet_khuyen_mai` | khuyến mãi | Laptop thuộc scope PRODUCT |
+| 20 | `don_hang` | đơn hàng | Tổng tiền, trạng thái, nhân viên |
+| 21 | `chi_tiet_don_hang` | đơn hàng | Snapshot tên, đơn giá, số lượng |
+| 22 | `thanh_toan` | thanh toán | Nhiều lần thử trên một đơn |
+| 23 | `danh_gia` | đánh giá | Gắn customer/laptop/order |
+| 24 | `san_pham_yeu_thich` | yêu thích | Unique customer-laptop |
+| 25 | `thong_bao` | thông báo | In-app notification theo tài khoản |
 
 ## 2. Ma trận REST API dự kiến
 
@@ -66,8 +64,6 @@ Mọi đường dẫn có prefix `/api/v1`. “Đã đăng nhập” chấp nh�
 | Đánh giá | `GET /laptops/:id/reviews` | Công khai |
 | Đánh giá | `POST /laptops/:id/reviews`, `PUT /reviews/:id`, `DELETE /reviews/:id` | Customer sở hữu |
 | Đánh giá quản trị | `PATCH /admin/reviews/:id/status` | Admin, Staff |
-| Banner | `GET /banners` | Công khai |
-| Banner quản trị | `GET /admin/banners`, `POST /admin/banners`, `PUT /admin/banners/:id`, `DELETE /admin/banners/:id`, `PATCH /admin/banners/:id/status` | Admin, Staff |
 | Thông báo | `GET /notifications`, `GET /notifications/unread-count`, `PATCH /notifications/:id/read`, `PATCH /notifications/read-all` | Đã đăng nhập, chỉ dữ liệu sở hữu |
 | Tài khoản | `GET /admin/accounts`, `GET /admin/accounts/:id`, `PATCH /admin/accounts/:id/status` | Admin |
 | Nhân viên | `GET /admin/staff`, `GET /admin/staff/:id`, `POST /admin/staff`, `PUT /admin/staff/:id`, `PATCH /admin/staff/:id/status` | Admin |

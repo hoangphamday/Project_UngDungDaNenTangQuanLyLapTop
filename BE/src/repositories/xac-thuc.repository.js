@@ -2,23 +2,15 @@ const { pool } = require('../config/database');
 
 const db = (connection) => connection || pool;
 
-const timVaiTro = async (tenVaiTro, connection) => {
-  const [rows] = await db(connection).execute(
-    'SELECT id, ten_vai_tro FROM vai_tro WHERE ten_vai_tro = ? LIMIT 1', [tenVaiTro],
-  );
-  return rows[0] || null;
-};
-
 const timTaiKhoanDangNhap = async (dinhDanh, connection, khoa = false) => {
   const cauKhoa = khoa ? ' FOR UPDATE' : '';
   const cotDinhDanh = dinhDanh.includes('@')
     ? 'tk.email'
     : /^0\d{9}$/.test(dinhDanh) ? 'tk.so_dien_thoai' : 'tk.ten_dang_nhap';
   const [rows] = await db(connection).execute(
-    `SELECT tk.id, tk.vai_tro_id, tk.ten_dang_nhap, tk.mat_khau_hash, tk.email,
-            tk.so_dien_thoai, tk.trang_thai, vt.ten_vai_tro
+    `SELECT tk.id, tk.ten_dang_nhap, tk.mat_khau_hash, tk.email,
+            tk.so_dien_thoai, tk.trang_thai, tk.vai_tro AS ten_vai_tro
        FROM tai_khoan tk
-       JOIN vai_tro vt ON vt.id = tk.vai_tro_id
       WHERE ${cotDinhDanh} = ?
       LIMIT 1${cauKhoa}`,
     [dinhDanh],
@@ -29,12 +21,12 @@ const timTaiKhoanDangNhap = async (dinhDanh, connection, khoa = false) => {
 const timTaiKhoanTheoId = async (id, connection, khoa = false) => {
   const cauKhoa = khoa ? ' FOR UPDATE' : '';
   const [rows] = await db(connection).execute(
-    `SELECT tk.id, tk.vai_tro_id, tk.ten_dang_nhap, tk.email, tk.so_dien_thoai,
-            tk.trang_thai, tk.lan_dang_nhap_cuoi, tk.created_at, vt.ten_vai_tro,
+    `SELECT tk.id, tk.ten_dang_nhap, tk.email, tk.so_dien_thoai,
+            tk.trang_thai, tk.lan_dang_nhap_cuoi, tk.created_at,
+            tk.vai_tro AS ten_vai_tro,
             kh.id AS khach_hang_id, kh.ho_ten AS ho_ten_khach_hang,
             nv.id AS nhan_vien_id, nv.ho_ten AS ho_ten_nhan_vien, nv.ma_nhan_vien
        FROM tai_khoan tk
-       JOIN vai_tro vt ON vt.id = tk.vai_tro_id
        LEFT JOIN khach_hang kh ON kh.tai_khoan_id = tk.id
        LEFT JOIN nhan_vien nv ON nv.tai_khoan_id = tk.id
       WHERE tk.id = ? LIMIT 1${cauKhoa}`,
@@ -46,9 +38,9 @@ const timTaiKhoanTheoId = async (id, connection, khoa = false) => {
 const taoTaiKhoan = async (duLieu, connection) => {
   const [result] = await db(connection).execute(
     `INSERT INTO tai_khoan
-       (vai_tro_id, ten_dang_nhap, mat_khau_hash, email, so_dien_thoai)
+       (vai_tro, ten_dang_nhap, mat_khau_hash, email, so_dien_thoai)
      VALUES (?, ?, ?, ?, ?)`,
-    [duLieu.vaiTroId, duLieu.tenDangNhap, duLieu.matKhauHash, duLieu.email, duLieu.soDienThoai],
+    [duLieu.vaiTro, duLieu.tenDangNhap, duLieu.matKhauHash, duLieu.email, duLieu.soDienThoai],
   );
   return result.insertId;
 };
@@ -119,7 +111,7 @@ const doiMatKhau = (taiKhoanId, matKhauHash, connection) =>
   db(connection).execute('UPDATE tai_khoan SET mat_khau_hash = ? WHERE id = ?', [matKhauHash, taiKhoanId]);
 
 module.exports = {
-  timVaiTro, timTaiKhoanDangNhap, timTaiKhoanTheoId, taoTaiKhoan, taoKhachHang,
+  timTaiKhoanDangNhap, timTaiKhoanTheoId, taoTaiKhoan, taoKhachHang,
   capNhatLanDangNhap, luuRefreshToken, timRefreshTokenDeKhoa, thuHoiRefreshToken,
   thuHoiTatCaRefreshToken, huyOtpCu, taoOtp, timOtpDeKhoa, tangSoLanThuOtp,
   danhDauOtpDaDung, doiMatKhau,

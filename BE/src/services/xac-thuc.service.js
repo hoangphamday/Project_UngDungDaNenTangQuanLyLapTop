@@ -32,12 +32,9 @@ const taoCapToken = async (taiKhoan, thietBi, connection) => {
 };
 
 const dangKy = (duLieu) => trongGiaoDich(async (connection) => {
-  const vaiTro = await repo.timVaiTro(VAI_TRO.CUSTOMER, connection);
-  if (!vaiTro) throw new LoiUngDung('Du lieu vai tro CUSTOMER chua duoc khoi tao', 500);
-
   const matKhauHash = await bcrypt.hash(duLieu.matKhau, 12);
   const taiKhoanId = await repo.taoTaiKhoan({
-    vaiTroId: vaiTro.id,
+    vaiTro: VAI_TRO.CUSTOMER,
     tenDangNhap: duLieu.tenDangNhap,
     matKhauHash,
     email: duLieu.email,

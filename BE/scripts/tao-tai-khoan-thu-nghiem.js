@@ -6,10 +6,9 @@ const taoTaiKhoanThuNghiem = async () => {
   if (!matKhau || matKhau.length < 8) throw new Error('Can dat TEST_ADMIN_PASSWORD co it nhat 8 ky tu');
   const matKhauHash = await bcrypt.hash(matKhau, 12);
   const [result] = await pool.execute(
-    `UPDATE tai_khoan tk
-       JOIN vai_tro vt ON vt.id = tk.vai_tro_id
-        SET tk.mat_khau_hash = ?, tk.trang_thai = 'ACTIVE'
-      WHERE tk.ten_dang_nhap = 'admin' AND vt.ten_vai_tro = 'ADMIN'`,
+    `UPDATE tai_khoan
+        SET mat_khau_hash = ?, trang_thai = 'ACTIVE'
+      WHERE ten_dang_nhap = 'admin' AND vai_tro = 'ADMIN'`,
     [matKhauHash],
   );
   if (result.affectedRows !== 1) throw new Error('Khong tim thay tai khoan admin mau trong database');

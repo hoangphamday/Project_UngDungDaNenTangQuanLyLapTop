@@ -1,6 +1,6 @@
 ﻿-- ============================================================
 -- PROJECT: XÂY DỰNG HỆ THỐNG MOBILE ĐA NỀN TẢNG QUẢN LÝ
---          CỬA HÀNG BÁN LAPTOP (BẢN CẢI TIẾN V2 - 27 BẢNG)
+--          CỬA HÀNG BÁN LAPTOP (BẢN CẢI TIẾN V3 - 25 BẢNG)
 -- Database: MySQL 8.0+
 -- Stack: MySQL + Node.js + Expo (React Native)
 -- ============================================================
@@ -14,18 +14,11 @@ USE laptop_store;
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
 
--- 1. VAI TRÒ
-CREATE TABLE vai_tro (
-    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    ten_vai_tro VARCHAR(50) NOT NULL UNIQUE,
-    mo_ta VARCHAR(255),
-    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
-) ENGINE=InnoDB;
-
--- 2. TÀI KHOẢN
+-- 1. TÀI KHOẢN
+-- Vai trò là tập giá trị cố định nên lưu trực tiếp, tránh một bảng và một JOIN không cần thiết.
 CREATE TABLE tai_khoan (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    vai_tro_id BIGINT UNSIGNED NOT NULL,
+    vai_tro ENUM('ADMIN','STAFF','CUSTOMER') NOT NULL DEFAULT 'CUSTOMER',
     ten_dang_nhap VARCHAR(100) NOT NULL UNIQUE,
     mat_khau_hash VARCHAR(255) NOT NULL,
     email VARCHAR(150) NOT NULL UNIQUE,
@@ -33,11 +26,10 @@ CREATE TABLE tai_khoan (
     trang_thai ENUM('ACTIVE','LOCKED','INACTIVE') NOT NULL DEFAULT 'ACTIVE',
     lan_dang_nhap_cuoi DATETIME NULL,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    CONSTRAINT fk_taikhoan_vaitro FOREIGN KEY (vai_tro_id) REFERENCES vai_tro(id)
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB;
 
--- 3. REFRESH TOKEN
+-- 2. REFRESH TOKEN
 CREATE TABLE refresh_token (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     tai_khoan_id BIGINT UNSIGNED NOT NULL,
@@ -51,7 +43,7 @@ CREATE TABLE refresh_token (
     CONSTRAINT fk_refreshtoken_taikhoan FOREIGN KEY (tai_khoan_id) REFERENCES tai_khoan(id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
--- 4. THIẾT BỊ / PUSH TOKEN (mới - bắt buộc cho Expo push notification)
+-- 3. THIẾT BỊ / PUSH TOKEN (mới - bắt buộc cho Expo push notification)
 CREATE TABLE thiet_bi (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     tai_khoan_id BIGINT UNSIGNED NOT NULL,
@@ -63,12 +55,11 @@ CREATE TABLE thiet_bi (
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     UNIQUE KEY uk_thietbi_token (expo_push_token),
+    KEY idx_thietbi_taikhoan (tai_khoan_id, trang_thai),
     CONSTRAINT fk_thietbi_taikhoan FOREIGN KEY (tai_khoan_id) REFERENCES tai_khoan(id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
-CREATE INDEX idx_thietbi_taikhoan ON thiet_bi(tai_khoan_id, trang_thai);
-
--- 5. OTP XÁC THỰC (mới - đăng ký / đăng nhập / quên mật khẩu qua SMS)
+-- 4. OTP XÁC THỰC (mới - đăng ký / đăng nhập / quên mật khẩu qua SMS)
 CREATE TABLE otp_xac_thuc (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     so_dien_thoai VARCHAR(20) NOT NULL,
@@ -82,7 +73,7 @@ CREATE TABLE otp_xac_thuc (
 
 CREATE INDEX idx_otp_sdt_mucdich ON otp_xac_thuc(so_dien_thoai, muc_dich, da_su_dung);
 
--- 6. KHÁCH HÀNG
+-- 5. KHÁCH HÀNG
 CREATE TABLE khach_hang (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     tai_khoan_id BIGINT UNSIGNED NOT NULL UNIQUE,
@@ -96,7 +87,7 @@ CREATE TABLE khach_hang (
     CONSTRAINT fk_khachhang_taikhoan FOREIGN KEY (tai_khoan_id) REFERENCES tai_khoan(id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
--- 7. NHÂN VIÊN
+-- 6. NHÂN VIÊN
 CREATE TABLE nhan_vien (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     tai_khoan_id BIGINT UNSIGNED NOT NULL UNIQUE,
@@ -111,7 +102,7 @@ CREATE TABLE nhan_vien (
     CONSTRAINT fk_nhanvien_taikhoan FOREIGN KEY (tai_khoan_id) REFERENCES tai_khoan(id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
--- 8. HÃNG LAPTOP
+-- 7. HÃNG LAPTOP
 CREATE TABLE hang_laptop (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     ten_hang VARCHAR(100) NOT NULL UNIQUE,
@@ -121,7 +112,7 @@ CREATE TABLE hang_laptop (
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB;
 
--- 9. DANH MỤC (cải tiến: hỗ trợ phân cấp)
+-- 8. DANH MỤC (cải tiến: hỗ trợ phân cấp)
 CREATE TABLE danh_muc (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     ten_danh_muc VARCHAR(100) NOT NULL UNIQUE,
@@ -130,12 +121,11 @@ CREATE TABLE danh_muc (
     mo_ta TEXT NULL,
     trang_thai BOOLEAN NOT NULL DEFAULT TRUE,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    KEY idx_danhmuc_parent (parent_id),
     CONSTRAINT fk_danhmuc_parent FOREIGN KEY (parent_id) REFERENCES danh_muc(id) ON DELETE SET NULL
 ) ENGINE=InnoDB;
 
-CREATE INDEX idx_danhmuc_parent ON danh_muc(parent_id);
-
--- 10. LAPTOP (cải tiến: tách cột thông số chính để filter/index, giữ JSON cho phần phụ)
+-- 9. LAPTOP (cải tiến: tách cột thông số chính để filter/index, giữ JSON cho phần phụ)
 CREATE TABLE laptop (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     ma_san_pham VARCHAR(50) NOT NULL UNIQUE,
@@ -161,20 +151,19 @@ CREATE TABLE laptop (
     trang_thai ENUM('ACTIVE','INACTIVE','OUT_OF_STOCK') NOT NULL DEFAULT 'ACTIVE',
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    KEY idx_laptop_danhmuc (danh_muc_id),
+    KEY idx_laptop_hang_gia_ram (hang_laptop_id, gia_ban, ram_gb),
     CONSTRAINT fk_laptop_hang FOREIGN KEY (hang_laptop_id) REFERENCES hang_laptop(id),
     CONSTRAINT fk_laptop_danhmuc FOREIGN KEY (danh_muc_id) REFERENCES danh_muc(id)
 ) ENGINE=InnoDB;
 
-CREATE INDEX idx_laptop_hang ON laptop(hang_laptop_id);
-CREATE INDEX idx_laptop_danhmuc ON laptop(danh_muc_id);
 CREATE INDEX idx_laptop_gia ON laptop(gia_ban);
 CREATE INDEX idx_laptop_cpu ON laptop(cpu);
 CREATE INDEX idx_laptop_ram ON laptop(ram_gb);
 CREATE INDEX idx_laptop_gpu ON laptop(gpu);
-CREATE INDEX idx_laptop_hang_gia_ram ON laptop(hang_laptop_id, gia_ban, ram_gb);
 ALTER TABLE laptop ADD FULLTEXT INDEX ft_laptop_search (ten_san_pham, mo_ta);
 
--- 11. HÌNH ẢNH LAPTOP
+-- 10. HÌNH ẢNH LAPTOP
 CREATE TABLE hinh_anh_laptop (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     laptop_id BIGINT UNSIGNED NOT NULL,
@@ -185,7 +174,7 @@ CREATE TABLE hinh_anh_laptop (
     CONSTRAINT fk_hinhanh_laptop FOREIGN KEY (laptop_id) REFERENCES laptop(id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
--- 12. KHO
+-- 11. KHO
 CREATE TABLE kho (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     ma_kho VARCHAR(30) NOT NULL UNIQUE,
@@ -196,7 +185,7 @@ CREATE TABLE kho (
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB;
 
--- 13. TỒN KHO
+-- 12. TỒN KHO
 CREATE TABLE ton_kho (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     kho_id BIGINT UNSIGNED NOT NULL,
@@ -210,7 +199,7 @@ CREATE TABLE ton_kho (
     CONSTRAINT fk_tonkho_laptop FOREIGN KEY (laptop_id) REFERENCES laptop(id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
--- 14. NHÀ CUNG CẤP
+-- 13. NHÀ CUNG CẤP
 CREATE TABLE nha_cung_cap (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     ma_ncc VARCHAR(30) NOT NULL UNIQUE,
@@ -224,7 +213,7 @@ CREATE TABLE nha_cung_cap (
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB;
 
--- 15. PHIẾU NHẬP
+-- 14. PHIẾU NHẬP
 CREATE TABLE phieu_nhap (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     ma_phieu VARCHAR(30) NOT NULL UNIQUE,
@@ -240,7 +229,7 @@ CREATE TABLE phieu_nhap (
     CONSTRAINT fk_phieunhap_nhanvien FOREIGN KEY (nhan_vien_id) REFERENCES nhan_vien(id)
 ) ENGINE=InnoDB;
 
--- 16. CHI TIẾT PHIẾU NHẬP
+-- 15. CHI TIẾT PHIẾU NHẬP
 CREATE TABLE chi_tiet_phieu_nhap (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     phieu_nhap_id BIGINT UNSIGNED NOT NULL,
@@ -252,7 +241,7 @@ CREATE TABLE chi_tiet_phieu_nhap (
     CONSTRAINT fk_ctphieunhap_laptop FOREIGN KEY (laptop_id) REFERENCES laptop(id)
 ) ENGINE=InnoDB;
 
--- 17. ĐỊA CHỈ KHÁCH HÀNG
+-- 16. ĐỊA CHỈ KHÁCH HÀNG
 CREATE TABLE dia_chi (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     khach_hang_id BIGINT UNSIGNED NOT NULL,
@@ -268,7 +257,7 @@ CREATE TABLE dia_chi (
     CONSTRAINT fk_diachi_khachhang FOREIGN KEY (khach_hang_id) REFERENCES khach_hang(id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
--- 18. CHI TIẾT GIỎ HÀNG
+-- 17. CHI TIẾT GIỎ HÀNG
 CREATE TABLE chi_tiet_gio_hang (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     khach_hang_id BIGINT UNSIGNED NOT NULL,
@@ -281,7 +270,7 @@ CREATE TABLE chi_tiet_gio_hang (
     CONSTRAINT fk_ctgiohang_laptop FOREIGN KEY (laptop_id) REFERENCES laptop(id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
--- 19. KHUYẾN MÃI (cải tiến: bổ sung danh_muc_id / hang_laptop_id cho scope CATEGORY/BRAND)
+-- 18. KHUYẾN MÃI (cải tiến: bổ sung danh_muc_id / hang_laptop_id cho scope CATEGORY/BRAND)
 CREATE TABLE khuyen_mai (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     ma_khuyen_mai VARCHAR(50) NOT NULL UNIQUE,
@@ -309,7 +298,7 @@ CREATE TABLE khuyen_mai (
 --  CATEGORY -> dùng khuyen_mai.danh_muc_id
 --  BRAND    -> dùng khuyen_mai.hang_laptop_id
 
--- 20. CHI TIẾT KHUYẾN MÃI (scope PRODUCT)
+-- 19. CHI TIẾT KHUYẾN MÃI (scope PRODUCT)
 CREATE TABLE chi_tiet_khuyen_mai (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     khuyen_mai_id BIGINT UNSIGNED NOT NULL,
@@ -319,7 +308,7 @@ CREATE TABLE chi_tiet_khuyen_mai (
     CONSTRAINT fk_ctkm_laptop FOREIGN KEY (laptop_id) REFERENCES laptop(id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
--- 21. ĐƠN HÀNG
+-- 20. ĐƠN HÀNG
 CREATE TABLE don_hang (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     ma_don_hang VARCHAR(40) NOT NULL UNIQUE,
@@ -350,9 +339,7 @@ CREATE TABLE don_hang (
 ) ENGINE=InnoDB;
 
 CREATE INDEX idx_donhang_trangthai ON don_hang(trang_thai);
-CREATE INDEX idx_donhang_khachhang ON don_hang(khach_hang_id);
-
--- 22. CHI TIẾT ĐƠN HÀNG
+-- 21. CHI TIẾT ĐƠN HÀNG
 CREATE TABLE chi_tiet_don_hang (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     don_hang_id BIGINT UNSIGNED NOT NULL,
@@ -365,7 +352,7 @@ CREATE TABLE chi_tiet_don_hang (
     CONSTRAINT fk_ctdonhang_laptop FOREIGN KEY (laptop_id) REFERENCES laptop(id)
 ) ENGINE=InnoDB;
 
--- 23. THANH TOÁN (cải tiến: cho phép nhiều lần thử thanh toán trên 1 đơn hàng)
+-- 22. THANH TOÁN (cải tiến: cho phép nhiều lần thử thanh toán trên 1 đơn hàng)
 CREATE TABLE thanh_toan (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     don_hang_id BIGINT UNSIGNED NOT NULL,
@@ -378,13 +365,13 @@ CREATE TABLE thanh_toan (
     noi_dung TEXT NULL,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    KEY idx_thanhtoan_donhang (don_hang_id, trang_thai),
     CONSTRAINT fk_thanhtoan_donhang FOREIGN KEY (don_hang_id) REFERENCES don_hang(id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
-CREATE INDEX idx_thanhtoan_donhang ON thanh_toan(don_hang_id, trang_thai);
 -- Lấy giao dịch hiệu lực: SELECT * FROM thanh_toan WHERE don_hang_id=? AND trang_thai='PAID' LIMIT 1
 
--- 24. ĐÁNH GIÁ
+-- 23. ĐÁNH GIÁ
 CREATE TABLE danh_gia (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     khach_hang_id BIGINT UNSIGNED NOT NULL,
@@ -396,14 +383,13 @@ CREATE TABLE danh_gia (
     trang_thai ENUM('PENDING','APPROVED','HIDDEN') NOT NULL DEFAULT 'APPROVED',
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    KEY idx_danhgia_laptop (laptop_id, trang_thai),
     CONSTRAINT fk_danhgia_khachhang FOREIGN KEY (khach_hang_id) REFERENCES khach_hang(id) ON DELETE CASCADE,
     CONSTRAINT fk_danhgia_laptop FOREIGN KEY (laptop_id) REFERENCES laptop(id) ON DELETE CASCADE,
     CONSTRAINT fk_danhgia_donhang FOREIGN KEY (don_hang_id) REFERENCES don_hang(id) ON DELETE SET NULL
 ) ENGINE=InnoDB;
 
-CREATE INDEX idx_danhgia_laptop ON danh_gia(laptop_id, trang_thai);
-
--- 25. SẢN PHẨM YÊU THÍCH
+-- 24. SẢN PHẨM YÊU THÍCH
 CREATE TABLE san_pham_yeu_thich (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     khach_hang_id BIGINT UNSIGNED NOT NULL,
@@ -414,22 +400,7 @@ CREATE TABLE san_pham_yeu_thich (
     CONSTRAINT fk_yeuthich_laptop FOREIGN KEY (laptop_id) REFERENCES laptop(id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
--- 26. BANNER QUẢNG CÁO
-CREATE TABLE banner_quang_cao (
-    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    tieu_de VARCHAR(200) NOT NULL,
-    image_url VARCHAR(500) NOT NULL,
-    loai_banner ENUM('SLIDER','POPUP','HOME_BANNER','CATEGORY_BANNER') NOT NULL,
-    link_dich VARCHAR(300) NULL,
-    thu_tu INT UNSIGNED NOT NULL DEFAULT 0,
-    ngay_bat_dau DATETIME NULL,
-    ngay_ket_thuc DATETIME NULL,
-    trang_thai ENUM('ACTIVE','INACTIVE') NOT NULL DEFAULT 'ACTIVE',
-    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-) ENGINE=InnoDB;
-
--- 27. THÔNG BÁO
+-- 25. THÔNG BÁO
 CREATE TABLE thong_bao (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     tai_khoan_id BIGINT UNSIGNED NOT NULL,
@@ -439,23 +410,17 @@ CREATE TABLE thong_bao (
     du_lieu JSON NULL,
     da_doc BOOLEAN NOT NULL DEFAULT FALSE,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    KEY idx_thongbao_taikhoan (tai_khoan_id, da_doc),
     CONSTRAINT fk_thongbao_taikhoan FOREIGN KEY (tai_khoan_id) REFERENCES tai_khoan(id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
-
-CREATE INDEX idx_thongbao_taikhoan ON thong_bao(tai_khoan_id, da_doc);
 
 -- ============================================================
 -- DỮ LIỆU MẪU CƠ BẢN
 -- ============================================================
 
-INSERT INTO vai_tro (id, ten_vai_tro, mo_ta) VALUES
-(1, 'ADMIN', 'Quản trị hệ thống'),
-(2, 'STAFF', 'Nhân viên cửa hàng'),
-(3, 'CUSTOMER', 'Khách hàng');
-
-INSERT INTO tai_khoan (id, vai_tro_id, ten_dang_nhap, mat_khau_hash, email, so_dien_thoai, trang_thai) VALUES
-(1, 1, 'admin', '$2b$10$demoHashAdmin', 'admin@laptopstore.vn', '0900000001', 'ACTIVE'),
-(3, 3, 'nguyenvana', '$2b$10$demoHashUser01', 'nguyenvana@gmail.com', '0900000003', 'ACTIVE');
+INSERT INTO tai_khoan (id, vai_tro, ten_dang_nhap, mat_khau_hash, email, so_dien_thoai, trang_thai) VALUES
+(1, 'ADMIN', 'admin', '$2b$10$demoHashAdmin', 'admin@laptopstore.vn', '0900000001', 'ACTIVE'),
+(3, 'CUSTOMER', 'nguyenvana', '$2b$10$demoHashUser01', 'nguyenvana@gmail.com', '0900000003', 'ACTIVE');
 
 INSERT INTO khach_hang (id, tai_khoan_id, ho_ten, ngay_sinh, gioi_tinh, diem_tich_luy) VALUES
 (1, 3, 'Nguyễn Văn A', '2004-05-10', 'MALE', 120);
@@ -486,9 +451,5 @@ INSERT INTO chi_tiet_gio_hang (khach_hang_id, laptop_id, so_luong) VALUES (1, 2,
 INSERT INTO khuyen_mai (id, ma_khuyen_mai, ten_khuyen_mai, pham_vi_ap_dung, loai_giam, gia_tri_giam, ngay_bat_dau, ngay_ket_thuc) VALUES
 (1, 'GIAM10', 'Giảm 10%', 'PRODUCT', 'PERCENT', 10, '2026-01-01', '2026-12-31');
 INSERT INTO chi_tiet_khuyen_mai (khuyen_mai_id, laptop_id) VALUES (1, 1);
-
--- Banner quảng cáo mẫu
-INSERT INTO banner_quang_cao (tieu_de, image_url, loai_banner, link_dich) VALUES
-('Back to School', 'https://example.com/banner1.jpg', 'HOME_BANNER', '/category/sinh-vien');
 
 SET FOREIGN_KEY_CHECKS = 1;

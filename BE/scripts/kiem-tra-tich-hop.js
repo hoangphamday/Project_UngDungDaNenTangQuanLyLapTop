@@ -8,7 +8,7 @@ const chay = async () => {
        FROM information_schema.tables
       WHERE table_schema = DATABASE() AND table_type = 'BASE TABLE'`,
   );
-  if (rows[0].total !== 27) throw new Error(`Schema co ${rows[0].total} bang, can dung 27 bang`);
+  if (rows[0].total !== 25) throw new Error(`Schema co ${rows[0].total} bang, can dung 25 bang`);
 
   const server = app.listen(0);
   try {
@@ -20,7 +20,7 @@ const chay = async () => {
     if (response.status !== 200 || body.data?.vaiTro !== 'ADMIN') {
       throw new Error(`GET /auth/me that bai: HTTP ${response.status}`);
     }
-    console.log('Tich hop MySQL + GET /auth/me thanh cong; schema du 27 bang.');
+    console.log('Tich hop MySQL + GET /auth/me thanh cong; schema du 25 bang.');
   } finally {
     await new Promise((resolve) => server.close(resolve));
   }

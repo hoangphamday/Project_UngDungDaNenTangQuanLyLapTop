@@ -48,4 +48,4 @@ Kiểm tra bằng `npm run check`, `npm test` và `npm run test:integration`. L�
 
 Điện thoại thật không dùng `localhost`; đặt base URL thành IP LAN, ví dụ `http://192.168.1.10:3000/api/v1`. Android emulator có thể dùng `http://10.0.2.2:3000/api/v1`.
 
-Phân tích đủ 27 bảng, API, rủi ro và cấu trúc đích nằm trong `PHAN_TICH_CO_SO_DU_LIEU_VA_KE_HOACH_API.md`.
+Phân tích schema, API, rủi ro và cấu trúc đích nằm trong `PHAN_TICH_CO_SO_DU_LIEU_VA_KE_HOACH_API.md`.

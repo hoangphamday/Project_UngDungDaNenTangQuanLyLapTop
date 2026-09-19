@@ -1,0 +1,11 @@
+import { Icon } from '@/components/ui/icon';
+import { colors, spacing, typography } from '@/constants/theme';
+import { useRouter } from 'expo-router';
+import type { PropsWithChildren } from 'react';
+import { KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+
+export function AuthShell({ title, subtitle, back = true, children }: PropsWithChildren<{ title: string; subtitle: string; back?: boolean }>) {
+  const router = useRouter(); return <SafeAreaView style={styles.safe}><KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined}><ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>{back && <Pressable onPress={() => router.back()} style={styles.back}><Icon name="arrow-left" /></Pressable>}<View style={styles.logoRow}><View style={styles.logo}><Icon name="laptop" size={25} color={colors.white} /></View><Text style={styles.brand}>Lap<Text style={styles.accent}>Zone</Text></Text></View><Text style={styles.title}>{title}</Text><Text style={styles.subtitle}>{subtitle}</Text><View style={styles.children}>{children}</View></ScrollView></KeyboardAvoidingView></SafeAreaView>;
+}
+const styles = StyleSheet.create({ safe: { flex: 1, backgroundColor: colors.white }, flex: { flex: 1 }, content: { flexGrow: 1, width: '100%', maxWidth: 520, alignSelf: 'center', padding: spacing.xxl, justifyContent: 'center' }, back: { position: 'absolute', top: spacing.lg, left: spacing.lg, width: 42, height: 42, borderRadius: 21, backgroundColor: colors.surfaceAlt, alignItems: 'center', justifyContent: 'center' }, logoRow: { flexDirection: 'row', alignItems: 'center', alignSelf: 'center', marginBottom: spacing.xxxl }, logo: { width: 46, height: 46, borderRadius: 14, backgroundColor: colors.primary, alignItems: 'center', justifyContent: 'center', marginRight: spacing.sm }, brand: { fontSize: 30, lineHeight: 36, fontWeight: '800', color: colors.navy }, accent: { color: colors.primary }, title: { ...typography.display, color: colors.text, textAlign: 'center' }, subtitle: { ...typography.body, color: colors.textSecondary, textAlign: 'center', marginTop: spacing.sm }, children: { marginTop: spacing.xxxl } });
