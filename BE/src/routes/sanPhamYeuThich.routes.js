@@ -1,0 +1,1 @@
+const r=require('express').Router();const c=require('../controllers/sanPhamYeuThich.controller');const {customer,idHopLe}=require('./middleware');r.get('/wishlist',...customer,c.danhSach);r.post('/wishlist/:laptopId',...customer,idHopLe,c.them);r.delete('/wishlist/:laptopId',...customer,idHopLe,c.xoa);module.exports=r;

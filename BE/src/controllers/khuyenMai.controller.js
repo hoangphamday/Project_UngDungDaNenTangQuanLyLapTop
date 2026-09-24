@@ -1,0 +1,1 @@
+const c=require('./mua-sam.controller');const a=require('./catalog-admin.controller');module.exports={khaDung:c.khuyenMaiKhaDung,kiemTra:c.kiemTraKhuyenMai,danhSach:a.danhSachKhuyenMai,tao:a.taoKhuyenMai,capNhat:a.capNhatKhuyenMai,doiTrangThai:a.doiTrangThaiKhuyenMai};

@@ -32,7 +32,7 @@ Tài liệu này đối chiếu trực tiếp với `../LapTop_Storev2.sql` (MyS
 | 24 | `san_pham_yeu_thich` | yêu thích | Unique customer-laptop |
 | 25 | `thong_bao` | thông báo | In-app notification theo tài khoản |
 
-## 2. Ma trận REST API dự kiến
+## 2. Ma trận REST API đã triển khai
 
 Mọi đường dẫn có prefix `/api/v1`. “Đã đăng nhập” chấp nhận mọi role đang ACTIVE.
 

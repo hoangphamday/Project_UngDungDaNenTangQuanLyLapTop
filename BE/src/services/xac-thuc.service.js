@@ -4,6 +4,7 @@ const env = require('../config/env');
 const { trongGiaoDich } = require('../config/database');
 const { VAI_TRO } = require('../constants/vai-tro');
 const repo = require('../repositories/xac-thuc.repository');
+const { guiOtp } = require('./sms.service');
 const LoiUngDung = require('../utils/loi-ung-dung');
 const {
   bamToken, bamOtp, soSanhAnToan, taoAccessToken, taoRefreshToken,
@@ -96,15 +97,24 @@ const quenMatKhau = async (soDienThoai) => {
   if (!taiKhoan || taiKhoan.so_dien_thoai !== soDienThoai || taiKhoan.trang_thai !== 'ACTIVE') return {};
 
   const maOtp = String(crypto.randomInt(0, 1_000_000)).padStart(6, '0');
-  await trongGiaoDich(async (connection) => {
+  const otpId = await trongGiaoDich(async (connection) => {
     await repo.huyOtpCu(soDienThoai, 'RESET_PASSWORD', connection);
-    await repo.taoOtp({
+    return repo.taoOtp({
       soDienThoai,
       maOtpHash: bamOtp(soDienThoai, maOtp, 'RESET_PASSWORD'),
       mucDich: 'RESET_PASSWORD',
       expiresAt: new Date(Date.now() + env.otp.expiresMinutes * 60_000),
     }, connection);
   });
+  try {
+    await guiOtp(soDienThoai, maOtp);
+  } catch (error) {
+    await repo.danhDauOtpDaDung(otpId);
+    // Khong log OTP, credentials hay so dien thoai.
+    console.error(`[SMS] Gui OTP that bai (${error.providerCode || error.statusCode || 'UNKNOWN'})`);
+    // Giu response giong tai khoan khong ton tai de tranh ro ri account enumeration.
+    return {};
+  }
   return env.nodeEnv === 'development' && env.otp.exposeInDevelopment ? { developmentOtp: maOtp } : {};
 };
 

@@ -1,0 +1,1 @@
+const r=require('express').Router();const c=require('../controllers/thongBao.controller');const {xacThuc,idHopLe}=require('./middleware');r.get('/notifications/unread-count',xacThuc,c.demChuaDoc);r.get('/notifications',xacThuc,c.danhSach);r.patch('/notifications/read-all',xacThuc,c.docTatCa);r.patch('/notifications/:id/read',xacThuc,idHopLe,c.doc);module.exports=r;

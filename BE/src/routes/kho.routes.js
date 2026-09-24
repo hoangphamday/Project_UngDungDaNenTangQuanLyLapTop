@@ -1,0 +1,1 @@
+const r=require('express').Router();const c=require('../controllers/kho.controller');const v=require('../validators/api.validator');const {manager,idHopLe}=require('./middleware');r.get('/admin/warehouses',...manager,c.danhSach);r.post('/admin/warehouses',...manager,v.warehouse,c.tao);r.put('/admin/warehouses/:id',...manager,idHopLe,v.warehouse,c.capNhat);module.exports=r;

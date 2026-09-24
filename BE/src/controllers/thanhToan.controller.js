@@ -1,0 +1,1 @@
+const c=require('./don-hang-thanh-toan.controller');const a=require('./quan-tri.controller');const w=require('./webhook.controller');module.exports={danhSach:c.danhSachThanhToan,thuLai:c.thanhToanLai,danhSachQuanTri:a.danhSachThanhToan,webhook:w.thanhToan};

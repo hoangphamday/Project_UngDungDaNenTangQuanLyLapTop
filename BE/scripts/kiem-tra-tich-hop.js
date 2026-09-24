@@ -12,15 +12,31 @@ const chay = async () => {
 
   const server = app.listen(0);
   try {
-    const token = taoAccessToken({ id: 1, ten_vai_tro: 'ADMIN' });
-    const response = await fetch(`http://127.0.0.1:${server.address().port}/api/v1/auth/me`, {
-      headers: { authorization: `Bearer ${token}` },
-    });
-    const body = await response.json();
-    if (response.status !== 200 || body.data?.vaiTro !== 'ADMIN') {
-      throw new Error(`GET /auth/me that bai: HTTP ${response.status}`);
+    const baseUrl = `http://127.0.0.1:${server.address().port}`;
+    const adminToken = taoAccessToken({ id: 1, ten_vai_tro: 'ADMIN' });
+    const customerToken = taoAccessToken({ id: 3, ten_vai_tro: 'CUSTOMER' });
+    const goi = async (path, token) => {
+      const response = await fetch(`${baseUrl}${path}`, {
+        headers: token ? { authorization: `Bearer ${token}` } : {},
+      });
+      return { status: response.status, body: await response.json() };
+    };
+    const checks = [
+      ['/api/v1/auth/me', adminToken, 200, (body) => body.data?.vaiTro === 'ADMIN'],
+      ['/api/v1/laptops', null, 200, (body) => Array.isArray(body.data?.items)],
+      ['/api/v1/categories/tree', null, 200, (body) => Array.isArray(body.data)],
+      ['/api/v1/profile', customerToken, 200, (body) => body.data?.id],
+      ['/api/v1/admin/dashboard', adminToken, 200, (body) => typeof body.data?.orders === 'number'],
+      ['/api/v1/profile', adminToken, 403, () => true],
+      ['/api/v1/admin/dashboard', customerToken, 403, () => true],
+    ];
+    for (const [path, token, expectedStatus, verify] of checks) {
+      const result = await goi(path, token);
+      if (result.status !== expectedStatus || !verify(result.body)) {
+        throw new Error(`${path} that bai: HTTP ${result.status}, mong doi ${expectedStatus}`);
+      }
     }
-    console.log('Tich hop MySQL + GET /auth/me thanh cong; schema du 25 bang.');
+    console.log(`Tich hop MySQL thanh cong: ${checks.length} luong public/Customer/Admin; schema du 25 bang.`);
   } finally {
     await new Promise((resolve) => server.close(resolve));
   }

@@ -1,0 +1,1 @@
+const c=require('./kho-cung-ung.controller');module.exports={danhSach:c.danhSachNhaCungCap,chiTiet:c.chiTietNhaCungCap,tao:c.taoNhaCungCap,capNhat:c.capNhatNhaCungCap,doiTrangThai:c.doiTrangThaiNhaCungCap};

@@ -1,0 +1,1 @@
+const r=require('express').Router();const c=require('../controllers/hinhAnhLaptop.controller');const {manager,idHopLe,taiAnh}=require('./middleware');r.post('/admin/laptops/:id/images',...manager,idHopLe,taiAnh.single('image'),c.tao);r.delete('/admin/laptops/:id/images/:imageId',...manager,idHopLe,c.xoa);module.exports=r;

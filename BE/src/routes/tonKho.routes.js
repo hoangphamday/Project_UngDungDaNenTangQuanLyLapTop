@@ -1,0 +1,1 @@
+const r=require('express').Router();const c=require('../controllers/tonKho.controller');const {manager,idHopLe}=require('./middleware');r.get('/admin/inventory/low-stock',...manager,c.sapHet);r.get('/admin/inventory',...manager,c.danhSach);r.get('/admin/inventory/:laptopId',...manager,idHopLe,c.chiTietLaptop);module.exports=r;

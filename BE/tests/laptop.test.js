@@ -1,0 +1,1 @@
+const test=require('node:test');const assert=require('node:assert/strict');const model=require('../src/models/laptop.model');const router=require('../src/routes/laptop.routes');test('module laptop co model va 6 route',()=>{assert.equal(model.getTableName(),'laptop');assert.equal(router.stack.filter(x=>x.route).length,6);});
