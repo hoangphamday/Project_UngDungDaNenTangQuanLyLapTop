@@ -1,6 +1,6 @@
 # Phân tích cơ sở dữ liệu và kế hoạch API
 
-Tài liệu này đối chiếu trực tiếp với `../LapTop_Store.sql` (MySQL 8.0+, 25 bảng). Không có bảng hay cột giả định nào được thêm vào mã nguồn Phase 1.
+Tài liệu này đối chiếu trực tiếp với `../LapTop_Storev2.sql` (MySQL 8.0+, 25 bảng). Không có bảng hay cột giả định nào được thêm vào mã nguồn Phase 1.
 
 ## 1. Mapping 25 bảng sang module
 
