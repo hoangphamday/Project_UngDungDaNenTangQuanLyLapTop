@@ -1,14 +1,14 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const routeNames=['thietBi','khachHang','diaChi','hangLaptop','danhMuc','laptop','hinhAnhLaptop','gioHang','sanPhamYeuThich','khuyenMai','donHang','danhGia','thongBao','kho','tonKho','nhaCungCap','phieuNhap','taiKhoan','nhanVien','thongKe'];
-const routers=[...routeNames.map((name)=>require(`../src/routes/${name}.routes`)),require('../src/routes/thanhToan.routes').router];
+const routers=[require('../src/routes/bienThe.routes'),...routeNames.map((name)=>require(`../src/routes/${name}.routes`)),require('../src/routes/thanhToan.routes').router];
 
 const entries = routers.flatMap((router)=>router.stack.filter((layer) => layer.route).map((layer) => ({
   endpoint: `${Object.keys(layer.route.methods)[0].toUpperCase()} ${layer.route.path}`,
   handlers: layer.route.stack.map((item) => item.handle),
 })));
 const publicEndpoints = new Set([
-  'GET /laptops', 'GET /laptops/slug/:slug', 'GET /laptops/:id', 'GET /laptops/:id/reviews',
+  'GET /laptops/:id/variants', 'GET /laptops', 'GET /laptops/slug/:slug', 'GET /laptops/:id', 'GET /laptops/:id/reviews',
   'GET /brands', 'GET /brands/:id', 'GET /categories', 'GET /categories/tree', 'GET /categories/:id',
 ]);
 const loggedInEndpoints = new Set([
@@ -21,7 +21,7 @@ const rolesOf = (entry) => entry.handlers.find((handler) => handler.vaiTroChoPhe
 const hasAuth = (entry) => entry.handlers.some((handler) => handler.name === 'xacThuc');
 
 test('tat ca route co dung lop xac thuc va nhom quyen', () => {
-  assert.equal(entries.length, 93);
+  assert.equal(entries.length, 101);
   for (const entry of entries) {
     if (publicEndpoints.has(entry.endpoint)) {
       assert.equal(hasAuth(entry), false, `${entry.endpoint} phai cong khai`);

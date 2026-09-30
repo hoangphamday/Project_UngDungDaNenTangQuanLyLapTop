@@ -35,6 +35,8 @@ const taoTaiLieu = () => {
   spec.paths = {};
   themRoutes(require('../routes/xacThuc.routes'), '/auth');
   themRoutes(require('../routes/otpXacThuc.routes'), '/auth');
+  themRoutes(require('../routes/admin-console.routes'), '');
+  themRoutes(require('../routes/bienThe.routes'), '');
   const names = ['thietBi','khachHang','diaChi','hangLaptop','danhMuc','laptop','hinhAnhLaptop','gioHang','sanPhamYeuThich','khuyenMai','donHang','danhGia','thongBao','kho','tonKho','nhaCungCap','phieuNhap','taiKhoan','nhanVien','thongKe'];
   for (const name of names) themRoutes(require(`../routes/${name}.routes`), '');
   const paymentRoutes = require('../routes/thanhToan.routes');

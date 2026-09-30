@@ -6,7 +6,7 @@ Backend modular monolith dùng Node.js, Express.js và MySQL 8.0+. API prefix: `
 
 Yêu cầu Node.js 20+ và MySQL 8.0+.
 
-1. Import `../LapTop_Store.sql` vào MySQL. File này xóa/tạo lại database `laptop_store`.
+1. Import `../Laptop_StoreVer3.sql` vào MySQL. File này xóa/tạo lại database `Laptop_StoreVer3`.
 2. Chạy `npm install` trong `BE`.
 3. Sao chép `.env.example` thành `.env`, điền database và ba secret dài, khác nhau.
 4. Seed bcrypt thật cho admin mẫu (PowerShell):
@@ -55,3 +55,7 @@ Kiểm tra bằng `npm run check`, `npm test` và `npm run test:integration`. L�
 Điện thoại thật không dùng `localhost`; đặt base URL thành IP LAN, ví dụ `http://192.168.1.10:3000/api/v1`. Android emulator có thể dùng `http://10.0.2.2:3000/api/v1`.
 
 Phân tích schema, API, rủi ro và cấu trúc đích nằm trong `PHAN_TICH_CO_SO_DU_LIEU_VA_KE_HOACH_API.md`.
+
+## Biến thể laptop
+
+Hướng dẫn migration, quản lý SKU, API và Mobile: [database/migrations/README.md](database/migrations/README.md). Database đang có dữ liệu dùng `npm run migrate:variants`; kiểm tra luồng biến thể trong database tạm bằng `npm run test:variants`.

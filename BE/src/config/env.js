@@ -33,7 +33,7 @@ module.exports = Object.freeze({
     port: laySoNguyen('DB_PORT', 3306),
     user: process.env.DB_USER || 'root',
     password: process.env.DB_PASSWORD || '',
-    name: process.env.DB_NAME || 'laptop_store',
+    name: process.env.DB_NAME || 'Laptop_StoreVer3',
     connectionLimit: laySoNguyen('DB_CONNECTION_LIMIT', 10),
   },
   jwt: {

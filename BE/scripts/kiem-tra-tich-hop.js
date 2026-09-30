@@ -3,12 +3,12 @@ const { pool } = require('../src/config/database');
 const { taoAccessToken } = require('../src/utils/bao-mat');
 
 const chay = async () => {
-  const [rows] = await pool.execute(
-    `SELECT COUNT(*) AS total
-       FROM information_schema.tables
-      WHERE table_schema = DATABASE() AND table_type = 'BASE TABLE'`,
-  );
-  if (rows[0].total !== 25) throw new Error(`Schema co ${rows[0].total} bang, can dung 25 bang`);
+  const [rows] = await pool.query('SHOW TABLES');
+  const tables = new Set(rows.map(row => Object.values(row)[0]));
+  const models = require('../src/models');
+  for (const model of Object.values(models).filter(m => typeof m.getTableName === 'function')) {
+    if (!tables.has(model.getTableName())) throw new Error(`Thieu bang ${model.getTableName()}`);
+  }
 
   const server = app.listen(0);
   try {
@@ -23,6 +23,8 @@ const chay = async () => {
     };
     const checks = [
       ['/api/v1/auth/me', adminToken, 200, (body) => body.data?.vaiTro === 'ADMIN'],
+      ['/api/v1/admin/variants', adminToken, 200, (body) => Array.isArray(body.data)],
+      ['/api/v1/laptops/1/variants', null, 200, (body) => Array.isArray(body.data)],
       ['/api/v1/laptops', null, 200, (body) => Array.isArray(body.data?.items)],
       ['/api/v1/categories/tree', null, 200, (body) => Array.isArray(body.data)],
       ['/api/v1/profile', customerToken, 200, (body) => body.data?.id],
@@ -36,7 +38,7 @@ const chay = async () => {
         throw new Error(`${path} that bai: HTTP ${result.status}, mong doi ${expectedStatus}`);
       }
     }
-    console.log(`Tich hop MySQL thanh cong: ${checks.length} luong public/Customer/Admin; schema du 25 bang.`);
+    console.log(`Tich hop MySQL thanh cong: ${checks.length} luong public/Customer/Admin; schema du 26 bang nghiep vu.`);
   } finally {
     await new Promise((resolve) => server.close(resolve));
   }

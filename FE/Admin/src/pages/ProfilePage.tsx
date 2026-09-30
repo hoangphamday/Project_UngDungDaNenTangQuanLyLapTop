@@ -1,7 +1,24 @@
-import { Camera, LockKeyhole, Mail, Phone, ShieldCheck, UserRound } from 'lucide-react'
-import { Button } from '../components/common/Button'
-import { PageHeader } from '../components/common/PageHeader'
-
+import { useAuth } from "../services/auth";
+import { PageHeader } from "../components/common/PageHeader";
 export function ProfilePage() {
-  return <><PageHeader eyebrow="Hệ thống" title="Hồ sơ quản trị viên" description="Quản lý thông tin cá nhân và bảo mật tài khoản." /><div className="profile-layout"><section className="panel profile-summary"><div className="profile-avatar-large">AD<button aria-label="Đổi ảnh"><Camera size={15} /></button></div><h2>Administrator</h2><p>Super Admin</p><span className="badge badge-success"><i />Đang hoạt động</span><div className="profile-meta"><span><Mail size={15} />admin@lapzone.vn</span><span><Phone size={15} />0901 234 567</span><span><ShieldCheck size={15} />Toàn quyền hệ thống</span></div></section><section className="panel profile-form"><div className="panel-header"><div><h2 className="panel-title">Thông tin cá nhân</h2><p className="panel-subtitle">Cập nhật thông tin hiển thị trong hệ thống</p></div></div><div className="form-grid profile-form-body"><label><span>Họ và tên</span><div className="input-icon"><UserRound size={16} /><input defaultValue="Administrator" /></div></label><label><span>Email</span><div className="input-icon"><Mail size={16} /><input defaultValue="admin@lapzone.vn" /></div></label><label><span>Số điện thoại</span><div className="input-icon"><Phone size={16} /><input defaultValue="0901 234 567" /></div></label><label><span>Vai trò</span><input value="Super Admin" disabled /></label><div className="full form-separator"><LockKeyhole size={17} /><div><strong>Bảo mật tài khoản</strong><span>Mật khẩu được thay đổi lần cuối 32 ngày trước</span></div><Button variant="secondary">Đổi mật khẩu</Button></div><div className="full form-actions"><Button onClick={() => window.alert('Bản demo: thông tin chưa được gửi đến máy chủ.')}>Lưu thay đổi</Button></div></div></section></div></>
+  const { user } = useAuth();
+  return (
+    <>
+      <PageHeader
+        eyebrow="Tài khoản"
+        title="Hồ sơ cá nhân"
+        description="Thông tin tài khoản đang sử dụng để truy cập hệ thống."
+      />
+      <section className="panel profile-summary">
+        <div className="profile-avatar-large">
+          {user?.tenDangNhap.slice(0, 2).toUpperCase()}
+        </div>
+        <h2>{user?.hoTen || user?.tenDangNhap}</h2>
+        <p>{user?.email}</p>
+        <span className="badge badge-info">
+          {user?.vaiTro === "ADMIN" ? "Quản trị viên" : "Nhân viên"}
+        </span>
+      </section>
+    </>
+  );
 }

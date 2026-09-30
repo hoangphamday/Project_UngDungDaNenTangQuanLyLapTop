@@ -4,10 +4,15 @@ export type ProductStatus = 'Còn hàng' | 'Sắp hết hàng' | 'Hết hàng';
 export type OrderStatus = 'PENDING' | 'CONFIRMED' | 'PROCESSING' | 'SHIPPING' | 'DELIVERED' | 'CANCELLED';
 
 export interface Product {
+  variants?: ProductVariant[]; selectedVariant?: ProductVariant;
   id: string; name: string; brand: string; category: string; price: number; originalPrice?: number;
   image: string; images: string[]; rating: number; reviewCount: number; sold: number;
   isNew?: boolean; isFeatured?: boolean; status: ProductStatus; warrantyMonths: number; description: string;
   specs: { cpu: string; ram: string; ssd: string; gpu: string; display: string };
+}
+export interface ProductVariant {
+  id: string; sku: string; color: string; ramGb: number; ssdGb: number;
+  price: number; originalPrice?: number; stock: number; image?: string;
 }
 export interface Category { id: string; name: string; icon: string; color: string; background: string }
 export interface PromotionBanner { id: string; eyebrow: string; title: string; subtitle: string; cta: string; image: ImageSource; textColor: 'light' | 'dark' }

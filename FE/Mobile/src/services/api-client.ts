@@ -1,4 +1,8 @@
-const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL ?? 'http://localhost:3000/api/v1';
+import * as Device from 'expo-device';
+import { Platform } from 'react-native';
+
+export const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL ??
+  (Platform.OS === 'android' && !Device.isDevice ? 'http://10.0.2.2:5000/api/v1' : 'http://localhost:5000/api/v1');
 
 interface RequestOptions extends RequestInit { token?: string }
 

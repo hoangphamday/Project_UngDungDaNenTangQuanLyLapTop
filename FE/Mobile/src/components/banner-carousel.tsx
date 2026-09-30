@@ -1,16 +1,48 @@
+import { ProductImage } from '@/components/product-image';
 import { colors, radius, spacing, typography } from '@/constants/theme';
-import { banners } from '@/data/mock-data';
-import { Image } from 'expo-image';
+import type { Product } from '@/types';
+import { formatCurrency } from '@/utils/format';
 import { useRouter } from 'expo-router';
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { FlatList, Pressable, StyleSheet, Text, useWindowDimensions, View, type ViewToken } from 'react-native';
+import { useEffect, useState } from 'react';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 
-export function BannerCarousel() {
-  const router = useRouter(); const { width } = useWindowDimensions(); const itemWidth = Math.min(width - 32, 868); const ref = useRef<FlatList>(null); const [active, setActive] = useState(0);
-  useEffect(() => { const timer = setInterval(() => { const next = (active + 1) % banners.length; ref.current?.scrollToIndex({ index: next, animated: true }); setActive(next); }, 5000); return () => clearInterval(timer); }, [active]);
-  const onViewableItemsChanged = useCallback(({ viewableItems }: { viewableItems: ViewToken[] }) => { const index = viewableItems[0]?.index; if (typeof index === 'number') setActive(index); }, []);
-  return <View><FlatList ref={ref} horizontal pagingEnabled showsHorizontalScrollIndicator={false} data={banners} keyExtractor={(item) => item.id} getItemLayout={(_, index) => ({ length: itemWidth, offset: itemWidth * index, index })} onViewableItemsChanged={onViewableItemsChanged} viewabilityConfig={{ itemVisiblePercentThreshold: 65 }} renderItem={({ item }) => {
-    const dark = item.textColor === 'dark'; return <View style={[styles.slide, { width: itemWidth }]}><Image source={item.image} style={StyleSheet.absoluteFill} contentFit="cover" /><View style={[styles.tint, dark && styles.lightTint]} /><View style={styles.content}><Text style={[styles.eyebrow, dark && styles.darkText]}>{item.eyebrow}</Text><Text style={[styles.title, dark && styles.darkText]}>{item.title}</Text><Text numberOfLines={2} style={[styles.subtitle, dark && styles.darkSubtitle]}>{item.subtitle}</Text><Pressable onPress={() => router.push('/products')} style={[styles.cta, dark && styles.darkCta]}><Text style={[styles.ctaText, dark && styles.darkCtaText]}>{item.cta}</Text></Pressable></View></View>;
-  }} /><View style={styles.dots}>{banners.map((item, index) => <View key={item.id} style={[styles.dot, active === index && styles.dotActive]} />)}</View></View>;
+export function BannerCarousel({ products }: { products: Product[] }) {
+  const router = useRouter();
+  const slides = products.filter((product) => product.originalPrice && product.originalPrice > product.price).slice(0, 4);
+  if (!slides.length && products.length) slides.push(products[0]);
+  const [active, setActive] = useState(0);
+  useEffect(() => {
+    if (slides.length < 2) return;
+    const timer = setInterval(() => setActive((index) => (index + 1) % slides.length), 5000);
+    return () => clearInterval(timer);
+  }, [slides.length]);
+  if (!slides.length) return null;
+  const product = slides[active % slides.length];
+  return <View>
+    <Pressable onPress={() => router.push(`/product/${product.id}`)} style={styles.slide}>
+      <View style={styles.copy}>
+        <Text style={styles.eyebrow}>{product.originalPrice ? 'GIÁ ƯU ĐÃI' : 'LAPTOP MỚI'}</Text>
+        <Text numberOfLines={2} style={styles.title}>{product.name}</Text>
+        <Text style={styles.price}>{formatCurrency(product.price)}</Text>
+        <View style={styles.cta}><Text style={styles.ctaText}>Xem chi tiết</Text></View>
+      </View>
+      <View style={styles.visual}><ProductImage uri={product.image} style={styles.image} /></View>
+    </Pressable>
+    {slides.length > 1 && <View style={styles.dots}>{slides.map((item, index) => <Pressable key={item.id} onPress={() => setActive(index)} style={[styles.dot, active === index && styles.dotActive]} />)}</View>}
+  </View>;
 }
-const styles = StyleSheet.create({ slide: { height: 194, borderRadius: radius.xl, overflow: 'hidden', position: 'relative' }, tint: { position: 'absolute', inset: 0, backgroundColor: 'rgba(2, 15, 45, 0.2)' }, lightTint: { backgroundColor: 'rgba(255,255,255,0.06)' }, content: { flex: 1, width: '58%', padding: spacing.xl, justifyContent: 'center' }, eyebrow: { ...typography.tiny, color: '#70D5FF', letterSpacing: 1 }, title: { fontSize: 23, lineHeight: 27, fontWeight: '800', color: colors.white, marginTop: 5 }, subtitle: { fontSize: 12, lineHeight: 17, color: '#D8E5FF', marginTop: spacing.sm }, darkText: { color: colors.navy }, darkSubtitle: { color: '#344054' }, cta: { alignSelf: 'flex-start', backgroundColor: colors.white, borderRadius: radius.pill, paddingHorizontal: spacing.md, paddingVertical: 7, marginTop: spacing.md }, darkCta: { backgroundColor: colors.primary }, ctaText: { ...typography.tiny, color: colors.primary }, darkCtaText: { color: colors.white }, dots: { height: 22, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 6 }, dot: { width: 6, height: 6, borderRadius: 3, backgroundColor: colors.borderStrong }, dotActive: { width: 20, backgroundColor: colors.primary } });
+
+const styles = StyleSheet.create({
+  slide: { height: 194, borderRadius: radius.xl, overflow: 'hidden', backgroundColor: colors.navy, flexDirection: 'row' },
+  copy: { flex: 1.2, padding: spacing.xl, justifyContent: 'center' },
+  eyebrow: { ...typography.tiny, color: '#83D9FF', letterSpacing: 1 },
+  title: { fontSize: 21, lineHeight: 26, fontWeight: '800', color: colors.white, marginTop: 6 },
+  price: { ...typography.bodyMedium, color: colors.white, marginTop: spacing.sm },
+  cta: { alignSelf: 'flex-start', backgroundColor: colors.white, borderRadius: radius.pill, paddingHorizontal: spacing.md, paddingVertical: 7, marginTop: spacing.md },
+  ctaText: { ...typography.tiny, color: colors.primary },
+  visual: { flex: 0.8, padding: spacing.md, justifyContent: 'center' },
+  image: { width: '100%', height: 150, borderRadius: radius.md },
+  dots: { height: 22, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 6 },
+  dot: { width: 6, height: 6, borderRadius: 3, backgroundColor: colors.borderStrong },
+  dotActive: { width: 20, backgroundColor: colors.primary },
+});

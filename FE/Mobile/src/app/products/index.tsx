@@ -24,7 +24,7 @@ export default function ProductListScreen() {
     const result = data.filter((item) => {
       const searchable = `${item.name} ${item.brand} ${item.specs.cpu} ${item.specs.gpu}`.toLocaleLowerCase('vi');
       const priceMatch = price === 'all' || (price === 'under20' && item.price < 20_000_000) || (price === '20to30' && item.price >= 20_000_000 && item.price <= 30_000_000) || (price === 'over30' && item.price > 30_000_000);
-      return (!normalized || searchable.includes(normalized)) && (!brand || item.brand === brand) && (!category || item.category === category) && (!ram || item.specs.ram.includes(ram)) && (!ssd || item.specs.ssd.includes(ssd)) && priceMatch;
+      return (!normalized || searchable.includes(normalized)) && (!brand || item.brand === brand) && (!category || item.category === category) && (!ram && !ssd || item.variants?.some(v=>(!ram || String(v.ramGb) === ram.replace(/\D/g,'')) && (!ssd || String(v.ssdGb) === ssd.replace(/\D/g,'')))) && priceMatch;
     });
     return [...result].sort((a, b) => sort === 'price-asc' ? a.price - b.price : sort === 'price-desc' ? b.price - a.price : sort === 'newest' ? Number(Boolean(b.isNew)) - Number(Boolean(a.isNew)) : b.sold - a.sold);
   }, [data, query, brand, category, ram, ssd, price, sort]);

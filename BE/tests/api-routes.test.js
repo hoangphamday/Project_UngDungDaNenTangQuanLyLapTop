@@ -4,11 +4,25 @@ const auth=require('../src/routes/xacThuc.routes');
 const otp=require('../src/routes/otpXacThuc.routes');
 const {webhookRouter:webhook}=require('../src/routes/thanhToan.routes');
 const routeNames=['thietBi','khachHang','diaChi','hangLaptop','danhMuc','laptop','hinhAnhLaptop','gioHang','sanPhamYeuThich','khuyenMai','donHang','danhGia','thongBao','kho','tonKho','nhaCungCap','phieuNhap','taiKhoan','nhanVien','thongKe'];
-const apiRouters=[...routeNames.map((name)=>require(`../src/routes/${name}.routes`)),require('../src/routes/thanhToan.routes').router];
+const apiRouters=[require('../src/routes/bienThe.routes'),require('../src/routes/admin-console.routes'),...routeNames.map((name)=>require(`../src/routes/${name}.routes`)),require('../src/routes/thanhToan.routes').router];
 
 const routes=(router,prefix)=>router.stack.filter(x=>x.route).map(x=>`${Object.keys(x.route.methods)[0].toUpperCase()} ${prefix}${x.route.path}`);
 const actual=new Set([...routes(auth,'/api/v1/auth'),...routes(otp,'/api/v1/auth'),...apiRouters.flatMap((router)=>routes(router,'/api/v1')),...routes(webhook,'/api/v1/payments')]);
 const expected=`
+GET /api/v1/laptops/:id/variants
+GET /api/v1/admin/variants
+POST /api/v1/admin/variants
+PUT /api/v1/admin/variants/:id
+PATCH /api/v1/admin/variants/:id/status
+PUT /api/v1/cart/variants/:bienTheId
+DELETE /api/v1/cart/variants/:bienTheId
+POST /api/v1/orders/quote
+GET /api/v1/admin/laptops
+GET /api/v1/admin/brands
+GET /api/v1/admin/categories
+GET /api/v1/admin/reviews
+GET /api/v1/admin/customers
+GET /api/v1/admin/promotions/:id
 POST /api/v1/auth/register
 POST /api/v1/auth/login
 POST /api/v1/auth/refresh-token
@@ -113,14 +127,14 @@ GET /api/v1/admin/statistics/products
 GET /api/v1/admin/statistics/orders
 GET /api/v1/admin/statistics/inventory`.trim().split('\n');
 
-test('ma tran REST API co du 103 endpoint, khong thua thieu',()=>{
-  assert.equal(expected.length,103);
-  assert.equal(actual.size,103);
+test('ma tran REST API co du 117 endpoint, khong thua thieu',()=>{
+  assert.equal(expected.length,117);
+  assert.equal(actual.size,117);
   for(const endpoint of expected)assert.ok(actual.has(endpoint),`Thieu ${endpoint}`);
 });
 
-test('Swagger sinh tai lieu cho du 103 operation',()=>{
+test('Swagger sinh tai lieu cho du 117 operation',()=>{
   const express=require('express');const {spec,ganSwagger}=require('../src/config/swagger');ganSwagger(express());
   const total=Object.values(spec.paths).reduce((sum,path)=>sum+Object.keys(path).length,0);
-  assert.equal(total,103);
+  assert.equal(total,117);
 });
