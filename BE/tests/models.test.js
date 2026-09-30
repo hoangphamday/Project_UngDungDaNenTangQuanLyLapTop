@@ -1,0 +1,3 @@
+const test=require('node:test');const assert=require('node:assert/strict');const models=require('../src/models');
+const names=['bienTheLaptop','taiKhoan','refreshToken','thietBi','otpXacThuc','khachHang','nhanVien','hangLaptop','danhMuc','laptop','hinhAnhLaptop','kho','tonKho','nhaCungCap','phieuNhap','chiTietPhieuNhap','diaChi','chiTietGioHang','khuyenMai','chiTietKhuyenMai','donHang','chiTietDonHang','thanhToan','danhGia','sanPhamYeuThich','thongBao'];
+test('co du 26 model anh xa 26 bang',()=>{assert.equal(names.length,26);for(const name of names)assert.ok(models[name],`Thieu model ${name}`);assert.equal(new Set(names.map((name)=>models[name].getTableName())).size,26);});

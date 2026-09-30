@@ -14,6 +14,9 @@ const xuLyLoi = (error, _req, res, _next) => {
   } else if (error.code === 'ER_NO_REFERENCED_ROW_2') {
     statusCode = 422;
     message = 'Du lieu tham chieu khong ton tai';
+  } else if (['ER_DATA_TOO_LONG', 'ER_TRUNCATED_WRONG_VALUE_FOR_FIELD', 'ER_WARN_DATA_OUT_OF_RANGE', 'ER_BAD_NULL_ERROR', 'ER_CHECK_CONSTRAINT_VIOLATED'].includes(error.code)) {
+    statusCode = 422;
+    message = 'Du lieu dau vao khong hop le';
   }
   if (statusCode >= 500) {
     // Khong log request body de tranh lo mat khau/token/OTP.

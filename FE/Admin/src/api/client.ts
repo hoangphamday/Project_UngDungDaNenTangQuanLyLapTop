@@ -12,4 +12,7 @@ apiClient.interceptors.request.use((config) => {
   return config
 })
 
-apiClient.interceptors.response.use((response) => response, (error: unknown) => Promise.reject(error))
+apiClient.interceptors.response.use(
+  (response) => response,
+  (error: unknown) => Promise.reject(error),
+)

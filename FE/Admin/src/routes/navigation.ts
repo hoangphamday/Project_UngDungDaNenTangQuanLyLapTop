@@ -1,20 +1,124 @@
-import { BadgePercent, Boxes, Building2, ClipboardList, GalleryHorizontalEnd, Gauge, Laptop, MessageSquareText, PackageOpen, ShoppingCart, Tags, Truck, Users, UserRoundCog } from 'lucide-react'
-import type { LucideIcon } from 'lucide-react'
+import {
+  BadgePercent,
+  BellRing,
+  Boxes,
+  Building2,
+  ClipboardList,
+  CreditCard,
+  Gauge,
+  Laptop,
+  MessageSquareText,
+  PackageSearch,
+  ShieldCheck,
+  ShoppingCart,
+  Truck,
+  Users,
+  UserRoundCog,
+} from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 
-export interface NavigationItem { label: string; path: string; icon: LucideIcon; group: 'Tổng quan' | 'Quản lý bán hàng' | 'Nội dung' }
+export type NavigationGroup =
+  | "Tổng quan"
+  | "Bán hàng"
+  | "Sản phẩm"
+  | "Kho hàng"
+  | "Marketing"
+  | "Người dùng";
+export interface NavigationItem {
+  label: string;
+  path: string;
+  icon: LucideIcon;
+  group: NavigationGroup;
+}
+export const navigationGroups: NavigationGroup[] = [
+  "Tổng quan",
+  "Bán hàng",
+  "Sản phẩm",
+  "Kho hàng",
+  "Marketing",
+  "Người dùng",
+];
 export const navigationItems: NavigationItem[] = [
-  { label: 'Dashboard', path: '/', icon: Gauge, group: 'Tổng quan' },
-  { label: 'Sản phẩm Laptop', path: '/san-pham', icon: Laptop, group: 'Quản lý bán hàng' },
-  { label: 'Danh mục', path: '/danh-muc', icon: Tags, group: 'Quản lý bán hàng' },
-  { label: 'Hãng Laptop', path: '/hang-laptop', icon: Building2, group: 'Quản lý bán hàng' },
-  { label: 'Đơn hàng', path: '/don-hang', icon: ShoppingCart, group: 'Quản lý bán hàng' },
-  { label: 'Khách hàng', path: '/khach-hang', icon: Users, group: 'Quản lý bán hàng' },
-  { label: 'Nhân viên', path: '/nhan-vien', icon: UserRoundCog, group: 'Quản lý bán hàng' },
-  { label: 'Kho hàng', path: '/kho-hang', icon: Boxes, group: 'Quản lý bán hàng' },
-  { label: 'Phiếu nhập', path: '/phieu-nhap', icon: ClipboardList, group: 'Quản lý bán hàng' },
-  { label: 'Nhà cung cấp', path: '/nha-cung-cap', icon: Truck, group: 'Quản lý bán hàng' },
-  { label: 'Khuyến mãi', path: '/khuyen-mai', icon: BadgePercent, group: 'Nội dung' },
-  { label: 'Banner', path: '/banner', icon: GalleryHorizontalEnd, group: 'Nội dung' },
-  { label: 'Đánh giá', path: '/danh-gia', icon: MessageSquareText, group: 'Nội dung' },
-]
-export const fallbackIcon = PackageOpen
+  { label: "Tổng quan", path: "/", icon: Gauge, group: "Tổng quan" },
+  {
+    label: "Đơn hàng",
+    path: "/don-hang",
+    icon: ShoppingCart,
+    group: "Bán hàng",
+  },
+  {
+    label: "Thanh toán",
+    path: "/thanh-toan",
+    icon: CreditCard,
+    group: "Bán hàng",
+  },
+  {
+    label: "Đánh giá",
+    path: "/danh-gia",
+    icon: MessageSquareText,
+    group: "Bán hàng",
+  },
+  { label: "Laptop", path: "/san-pham", icon: Laptop, group: "Sản phẩm" },
+  { label: "Biến thể laptop", path: "/bien-the", icon: Laptop, group: "Sản phẩm" },
+  {
+    label: "Danh mục",
+    path: "/danh-muc",
+    icon: PackageSearch,
+    group: "Sản phẩm",
+  },
+  {
+    label: "Hãng Laptop",
+    path: "/hang-laptop",
+    icon: Building2,
+    group: "Sản phẩm",
+  },
+  { label: "Tồn kho", path: "/kho-hang", icon: Boxes, group: "Kho hàng" },
+  {
+    label: "Danh sách kho",
+    path: "/danh-sach-kho",
+    icon: Building2,
+    group: "Kho hàng",
+  },
+  {
+    label: "Phiếu nhập",
+    path: "/phieu-nhap",
+    icon: ClipboardList,
+    group: "Kho hàng",
+  },
+  {
+    label: "Nhà cung cấp",
+    path: "/nha-cung-cap",
+    icon: Truck,
+    group: "Kho hàng",
+  },
+  {
+    label: "Khuyến mãi",
+    path: "/khuyen-mai",
+    icon: BadgePercent,
+    group: "Marketing",
+  },
+  {
+    label: "Thông báo",
+    path: "/thong-bao",
+    icon: BellRing,
+    group: "Marketing",
+  },
+  {
+    label: "Khách hàng",
+    path: "/khach-hang",
+    icon: Users,
+    group: "Người dùng",
+  },
+  {
+    label: "Nhân viên",
+    path: "/nhan-vien",
+    icon: UserRoundCog,
+    group: "Người dùng",
+  },
+  {
+    label: "Tài khoản",
+    path: "/tai-khoan",
+    icon: ShieldCheck,
+    group: "Người dùng",
+  },
+];

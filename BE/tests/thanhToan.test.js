@@ -1,0 +1,1 @@
+const test=require('node:test');const assert=require('node:assert/strict');const routes=require('../src/routes/thanhToan.routes');test('module thanh toan co 3 route noi bo va 1 webhook',()=>{assert.equal(routes.router.stack.filter(x=>x.route).length,3);assert.equal(routes.webhookRouter.stack.filter(x=>x.route).length,1);});

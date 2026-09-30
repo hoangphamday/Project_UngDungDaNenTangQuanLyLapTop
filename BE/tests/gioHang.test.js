@@ -1,0 +1,1 @@
+const test=require('node:test');const assert=require('node:assert/strict');const router=require('../src/routes/gioHang.routes');test('module gio hang co du 5 route',()=>assert.equal(router.stack.filter(x=>x.route).length,5));

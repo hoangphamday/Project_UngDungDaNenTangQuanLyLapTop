@@ -1,0 +1,1 @@
+const r=require('express').Router();const c=require('../controllers/khachHang.controller');const v=require('../validators/khachHang.validator');const {customer,taiAnh}=require('./middleware');r.get('/profile',...customer,c.layHoSo);r.put('/profile',...customer,v.capNhat,c.capNhatHoSo);r.put('/profile/avatar',...customer,taiAnh.single('avatar'),c.capNhatAvatar);module.exports=r;

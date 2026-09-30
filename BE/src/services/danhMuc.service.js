@@ -1,0 +1,1 @@
+const s=require('./api.service').catalog;module.exports={danhSach:()=>s.list('danh_muc'),cay:s.tree,chiTiet:(id)=>s.get('danh_muc',id),tao:(b)=>s.create('danh_muc',b),capNhat:(id,b)=>s.update('danh_muc',id,b),doiTrangThai:(id,v)=>s.status('danh_muc',id,v)};

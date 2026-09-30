@@ -1,0 +1,1 @@
+const test=require('node:test');const assert=require('node:assert/strict');const router=require('../src/routes/donHang.routes');test('module don hang co du 7 route customer va quan tri',()=>assert.equal(router.stack.filter(x=>x.route).length,7));

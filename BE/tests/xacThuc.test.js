@@ -1,0 +1,1 @@
+const test=require('node:test');const assert=require('node:assert/strict');const auth=require('../src/routes/xacThuc.routes');const otp=require('../src/routes/otpXacThuc.routes');test('xac thuc va OTP co du 9 route',()=>assert.equal(auth.stack.filter(x=>x.route).length+otp.stack.filter(x=>x.route).length,9));

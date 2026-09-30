@@ -1,0 +1,1 @@
+const c=require('./don-hang-thanh-toan.controller');const a=require('./quan-tri.controller');module.exports={tao:c.taoDonHang,danhSach:c.danhSachDonHang,chiTiet:c.chiTietDonHang,huy:c.huyDonHang,danhSachQuanTri:a.danhSachDonHang,chiTietQuanTri:a.chiTietDonHang,doiTrangThai:a.doiTrangThaiDonHang};

@@ -9,7 +9,10 @@
     "test": "node --test",
     "check": "node scripts/kiem-tra-cu-phap.js",
     "test:integration": "node scripts/kiem-tra-tich-hop.js",
-    "seed:test": "node scripts/tao-tai-khoan-thu-nghiem.js"
+    "seed:test": "node scripts/tao-tai-khoan-thu-nghiem.js",
+    "seed:demo-variants": "node scripts/seed-demo-variants.js",
+    "migrate:variants": "node scripts/migrate-variants.js",
+    "test:variants": "node scripts/kiem-tra-bien-the.js"
   },
   "keywords": [],
   "author": "",
@@ -28,7 +31,8 @@
     "morgan": "^1.12.1",
     "multer": "^2.4.0",
     "mysql2": "^3.24.4",
-    "sequelize": "^6.37.8"
+    "sequelize": "^6.37.8",
+    "swagger-ui-express": "^5.0.1"
   },
   "devDependencies": {
     "nodemon": "^3.1.14",

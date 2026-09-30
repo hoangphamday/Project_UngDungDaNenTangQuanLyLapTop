@@ -1,0 +1,1 @@
+const r=require('./xac-thuc.repository');module.exports={...require('./domain.repository').taoRepository('refresh_token'),luu:r.luuRefreshToken,timDeKhoa:r.timRefreshTokenDeKhoa,thuHoi:r.thuHoiRefreshToken,thuHoiTatCa:r.thuHoiTatCaRefreshToken};

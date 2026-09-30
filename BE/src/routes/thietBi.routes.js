@@ -1,0 +1,1 @@
+const r=require('express').Router();const c=require('../controllers/thietBi.controller');const v=require('../validators/api.validator');const {xacThuc,idHopLe}=require('./middleware');r.post('/devices',xacThuc,v.device,c.tao);r.get('/devices',xacThuc,c.danhSach);r.delete('/devices/:id',xacThuc,idHopLe,c.xoa);module.exports=r;

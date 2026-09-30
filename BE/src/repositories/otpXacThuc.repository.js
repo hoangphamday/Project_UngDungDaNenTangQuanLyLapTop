@@ -1,0 +1,1 @@
+const r=require('./xac-thuc.repository');module.exports={...require('./domain.repository').taoRepository('otp_xac_thuc'),tao:r.taoOtp,timDeKhoa:r.timOtpDeKhoa,huyCu:r.huyOtpCu,tangSoLanThu:r.tangSoLanThuOtp,danhDauDaDung:r.danhDauOtpDaDung};

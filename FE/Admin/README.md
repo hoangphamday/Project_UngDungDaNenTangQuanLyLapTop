@@ -1,32 +1,40 @@
-# React + TypeScript + Vite
+# LapZone Admin
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+## Chạy giao diện
 
-Currently, two official plugins are available:
-
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
-
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the Oxlint configuration
-
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
-
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+```powershell
+cd FE/Admin
+npm install
+npm run dev
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+Backend cần chạy cùng database đã cấu hình trong `BE/.env`. URL API mặc định là `http://localhost:3000/api/v1`; có thể đổi qua `VITE_API_BASE_URL` trong `FE/Admin/.env.local`.
+
+Đăng nhập bằng tài khoản ADMIN hoặc STAFF. Không có mật khẩu mặc định trong giao diện. STAFF không được vào màn hình tài khoản và nhân viên; backend kiểm tra quyền trên từng yêu cầu.
+
+## Nghiệp vụ
+
+- Tổng quan lấy doanh thu từ đơn đã giao, có bộ chọn khoảng ngày cho biểu đồ.
+- Laptop, hãng, danh mục, nhà cung cấp, kho, nhân viên: biểu mẫu tương ứng và dữ liệu API thật.
+- Đơn hàng: chi tiết sản phẩm, giao nhận, tổng tiền và chỉ những bước chuyển trạng thái backend cho phép.
+- Phiếu nhập: tạo/sửa nháp, thêm các dòng hàng, hoàn tất để cộng tồn, hoặc hủy. Phiếu đã hoàn tất không thể sửa.
+- Tồn kho: theo dõi số lượng, đã đặt, khả dụng và lọc dưới ngưỡng; không chỉnh tồn trực tiếp.
+- Khuyến mãi: phạm vi toàn bộ/sản phẩm/danh mục/hãng, thời gian và giới hạn phần trăm.
+- Thanh toán chỉ phục vụ tra cứu; cập nhật theo webhook hoặc khi giao hàng COD.
+- Đánh giá có duyệt/ẩn; thông báo hỗ trợ đánh dấu đã đọc.
+- Tìm kiếm, lọc và xuất CSV áp dụng trên danh sách được tải; phân trang giao diện 10 dòng. Danh sách lớn hiện tải lần lượt các trang API 100 dòng trước khi lọc.
+
+Không tự thay thế bằng dữ liệu mẫu khi API gặp lỗi. Các API đọc bổ sung nằm trong `BE/src/routes/admin-console.routes.js` và được bảo vệ bằng quyền quản trị/nhân viên.
+
+## Kiểm tra
+
+```powershell
+cd FE/Admin
+npm run build
+npm run lint
+cd ../../BE
+npm run check
+npm test
+```
+
+Các thao tác ghi đã được kiểm tra trên trình duyệt với API giả lập, không ghi dữ liệu thử vào database người dùng. Truy vấn đọc nghiệp vụ được kiểm tra trên database local.

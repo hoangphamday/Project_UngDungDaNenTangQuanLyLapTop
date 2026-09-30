@@ -1,0 +1,1 @@
+const s=require('./api.service').catalog;module.exports={danhSach:()=>s.list('hang_laptop'),chiTiet:(id)=>s.get('hang_laptop',id),tao:(b)=>s.create('hang_laptop',b),capNhat:(id,b)=>s.update('hang_laptop',id,b),doiTrangThai:(id,v)=>s.status('hang_laptop',id,v)};

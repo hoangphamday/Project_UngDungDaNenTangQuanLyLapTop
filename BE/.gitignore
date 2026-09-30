@@ -1,7 +1,5 @@
-node_modules/
 .env
 uploads/*
 !uploads/.gitkeep
+node_modules/
 npm-debug.log*
-coverage/
-.DS_Store

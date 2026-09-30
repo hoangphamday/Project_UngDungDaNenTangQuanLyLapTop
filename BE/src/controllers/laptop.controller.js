@@ -1,0 +1,1 @@
+const pub=require('./san-pham.controller');const adm=require('./catalog-admin.controller');module.exports={danhSach:pub.danhSachLaptop,chiTiet:pub.chiTietLaptop,chiTietTheoSlug:pub.chiTietLaptopTheoSlug,tao:adm.taoLaptop,capNhat:adm.capNhatLaptop,doiTrangThai:adm.doiTrangThaiLaptop};
