@@ -6,3 +6,4 @@ uploads/*
 !uploads/.gitkeep
 .expo/
 dist/
+BE/backups/
